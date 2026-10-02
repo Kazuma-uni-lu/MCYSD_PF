@@ -19,9 +19,7 @@ with open('/../data/vault_dump.txt', 'r', encoding="utf-8") as file:
     for line in file:
         pattern_match = re.search(pattern,line) #assuming there is no more than one match per line (from txt file)
         if pattern_match:
-            candidate = [int(pattern_match.group(i)) for i in range(3)]
+            candidate = [int(pattern_match.group(i)) for i in range(1,4)]
             if sum(candidate[:-1]) ==  candidate[-1]:
-                evidence = line
-                
-
+                evidence = pattern_match.group(0)
             
