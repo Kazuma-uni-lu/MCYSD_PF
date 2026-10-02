@@ -26,4 +26,4 @@ def solve_vault(path) -> tuple[str,list[int]]:
                 if sum(candidate[:-1]) ==  candidate[-1]:
                     evidence = pattern_match.group(0)
                     return (evidence, candidate)
-            
+                
