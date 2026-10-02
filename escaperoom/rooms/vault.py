@@ -1,21 +1,20 @@
 import re
-#https://docs.python.org/3/howto/regex.html  guide
-#https://docs.python.org/3/library/re.html
-#https://regex101.com use this to test regex 
 '''
+https://docs.python.org/3/howto/regex.html  guide
+https://docs.python.org/3/library/re.html
+https://regex101.com use this to test regex 
+
 \s => whitespace
 \d => digits
 * zero or more
 + at least once
 \{\} escape sequence for {}
 (...) matches and indicates the start and end of a group; the contents of a group can be retrieved after a match has been performed
-https://docs.python.org/3/library/re.html#re.Match.group match and group
+https://docs.python.org/3/library/re.html#re.Match.group
+https://docs.python.org/3/library/re.html#search-vs-match
 '''
 
-
 pattern = re.compile(r"SAFE\s*\{\s*(\d+)\s*-\s*(\d+)\s*-\s*(\d+)\s*\}")
-
-
 
 def solve_vault(path) -> tuple[str,list[int]]:
     with open(path, 'r', encoding="utf-8") as file:
@@ -26,4 +25,3 @@ def solve_vault(path) -> tuple[str,list[int]]:
                 if sum(candidate[:-1]) ==  candidate[-1]:
                     evidence = pattern_match.group(0)
                     return (evidence, candidate)
-                
