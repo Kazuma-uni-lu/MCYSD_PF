@@ -26,6 +26,18 @@ def decode(path):
                         print("Encoded Base64 before decoding : " + payload)
                         print("Reencoded Base64 message : " + reversed_payload_string )
 
+    #traverse the file again, only this time pre-checking for the correct hint
+    with open(path, "r", encoding="utf-8") as file:
+        for line in file:
+            current_line = line.strip()
+            if current_line.startswith("#") or not current_line.startswith("hint" + decrypted_payload):
+                continue
+            key, value = current_line.split("=", 1)
+            key = key.strip()
+            value = value.strip()
+            print(key, value)
+                        
+
 
         
     '''encoded_message.strip()
