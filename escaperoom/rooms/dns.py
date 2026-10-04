@@ -9,6 +9,6 @@ def decode():
         new_message = encoded_message[encoded_message.find(":")+1:]
         print(new_message)
         decoded_message = base64.b64decode(new_message).decode()
-        print(decoded_message)
+        print("The correct hint is number " + decoded_message)
 
 decode()
