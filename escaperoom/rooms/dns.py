@@ -15,7 +15,9 @@ def decode(path):
                 if encoding == "b64":
                     decrypted_payload = base64.b64decode(payload).decode()
                     print("The correct hint is number " + decrypted_payload)
-
+                    reversed_payload = base64.b64encode(decrypted_payload.encode("utf-8"))
+                    reversed_payload_string = reversed_payload.decode("ascii")
+                    print(reversed_payload_string)
 
 
         
