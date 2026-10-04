@@ -3,15 +3,15 @@ import base64
 def decode(path):
     with open(path, "r", encoding="utf-8") as file:
         for line in file:
-            line.strip()
-            if line.startswith("#"):
+            current_line = line.strip()
+            if current_line.startswith("#") or current_line.find(":") == -1:
                 continue
-            key, value = line.split("=", 1)
-            key.strip()
-            value.strip()
-            print(key, value)
-            '''encoding, payload = value.split(":", 1)
-            print(encoding, payload)'''
+            key, value = current_line.split("=", 1)
+            key = key.strip()
+            value = value.strip()
+            print(key + "=" + value)
+            encoding, payload = value.split(":", 1)
+            print(encoding, payload)
 
         
     '''encoded_message.strip()
