@@ -1,4 +1,5 @@
 import base64
+import codecs
 
 def decode(path):
     with open(path, "r", encoding="utf-8") as file:
@@ -36,16 +37,21 @@ def decode(path):
             key = key.strip()
             value = value.strip()
             print(key, value)
-                        
+            if current_line.find(":") != -1:
+                encoding, payload = value.split(":", 1)
+                if encoding == "rot13+b64":
+                    #decode rot13
+                    rot13_decoded_message = codecs.decode(payload, "rot13")
 
+                    #decode base64
+                    decrypted_payload = base64.b64decode(rot13_decoded_message).decode()
 
-        
-    '''encoded_message.strip()
-    print(encoded_message)
-    if(encoded_message.find("b64:") != -1):
-        new_message = encoded_message[encoded_message.find(":")+1:]
-        print(new_message)
-        decoded_message = base64.b64decode(new_message).decode()
-        print("The correct hint is number " + decoded_message'''
+                    #remove period at the end and save final word
+                    decrypted_payload = decrypted_payload.removesuffix(".")
+
+                    #extracted dns token
+                    dns_token = decrypted_payload[decrypted_payload.rfind(" ")+1:]
+                    print("Decrypted hint: " + dns_token)
+                    
 
 decode("data/dns.cfg")
