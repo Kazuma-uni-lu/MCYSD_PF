@@ -11,7 +11,12 @@ def decode(path):
             value = value.strip()
             print(key + "=" + value)
             encoding, payload = value.split(":", 1)
-            print(encoding, payload)
+            if key == "token_tag":
+                if encoding == "b64":
+                    decrypted_payload = base64.b64decode(payload).decode()
+                    print("The correct hint is number " + decrypted_payload)
+
+
 
         
     '''encoded_message.strip()
