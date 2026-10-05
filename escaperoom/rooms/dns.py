@@ -1,7 +1,7 @@
 import base64
 import codecs
 
-def decode(path):
+def decode(path) -> str:
     with open(path, "r", encoding="utf-8") as file:
         for line in file:
             current_line = line.strip()
@@ -52,6 +52,7 @@ def decode(path):
                     #extracted dns token
                     dns_token = decrypted_payload[decrypted_payload.rfind(" ")+1:]
                     print("Decrypted hint: " + dns_token)
+                    return dns_token
                     
 
-decode("data/dns.cfg")
+print(decode("data/dns.cfg"))
