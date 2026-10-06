@@ -18,7 +18,7 @@ def daytime_valid(date_time):
     except ValueError:
         return False
 
-def integer_check(sshd_pid, port_nbr):
+def pid_port_valid(sshd_pid, port_nbr):
     try:
         pid_nbr = sshd_pid.split('[')[1].split(']')[0]
     except IndexError:
@@ -31,7 +31,7 @@ def integer_check(sshd_pid, port_nbr):
     except ValueError:
         return False
 
-def ipaddress_check(ip):
+def ipaddress_valid(ip):
     try:
         ipaddress.ip_address(ip)
         return True
@@ -41,21 +41,23 @@ def ipaddress_check(ip):
 
 def check_valid_entry():
     invalid_count = 0
-    for i in range(len(logs)):
+    for i in range(len(logs)): # check if format is valid for each log entry
         if (
             len(logs[i]) == 13 
             and daytime_valid(logs[i][0]) == True
-            and integer_check(logs[i][2], logs[i][10]) == True
-            and ipaddress_check(logs[i][8]) == True
+            and pid_port_valid(logs[i][2], logs[i][10]) == True
+            and ipaddress_valid(logs[i][8]) == True
         ):
             valid_logs.append(logs[i])
         else:
             invalid_count += 1
-    print(f"Total valid entries: {len(valid_logs)}")
-    print(f"Total invalid entries: {invalid_count}")
+    print(f"Valid entries: {len(valid_logs)}")
+    print(f"Invalid entries: {invalid_count}")
+
+    return invalid_count
 
 def failed_login():
-    check_valid_entry()
+   
     ips = []
     subnets = {}
     for log in valid_logs:
@@ -63,7 +65,7 @@ def failed_login():
             ips.append(log[8])
 
     for ip in ips:
-        tmp = ".".join(ip.split('.')[0:3])
+        tmp = ".".join(ip.split('.')[0:3]) # tmp represents the first 3 octets of the ip, which is the key for the dictionary
         if tmp in subnets:
             subnets[tmp] += 1
         else:
@@ -76,7 +78,7 @@ def failed_login():
     for subnet, count in subnets.items():
         if count == max(subnets.values()):
             max_subnet = subnet
-            print(f"Subnet with the most failed logins: {subnet}.0/24 with {count} failed logins.")
+            #print(f"Subnet with max failed logins: {subnet}.0/24 ({count} failed logins)")
 
     max_subnet_ips = []
 
@@ -94,21 +96,49 @@ def failed_login():
 
     octet = ""
     count = 0
+    chosen_ip = ""
 
     for ip, freq in max_freq_ip.items():
         if freq == max(max_freq_ip.values()):
             octet = ip.split('.')[3]
             count = freq
-            print(f"IP with the most failed logins in subnet {max_subnet}.0/24: {ip} with {freq} failed logins.")
+            chosen_ip = ip
+            #print(f"IP with max failed logins in subnet {max_subnet}.0/24: {ip} ({freq} failed logins)")
 
-    return octet, count
+    sample_entry = ""
 
-def keypad_gen():
-    octet, count = failed_login()
+    for log in valid_logs:
+        if log[3] == "Failed" and log[8] == chosen_ip:
+            sample_entry = " ".join(log)
+
+    return octet, count, max_subnet, sample_entry
+
+def keypad_gen(octet, count):
+    
     keypad = octet + "" + str(count)
-    print(f"Generated keypad code: {keypad}")
+    #print(f"Generated keypad: {keypad}")
+    return keypad
+
+
+def soc_transcript():
+
+    invalid_count = check_valid_entry()
+
+    octet, count, max_subnet, sample_entry = failed_login()
+
+    keypad = keypad_gen(octet, count)
+
+    text = "TOKEN[KEYPAD]=" + keypad + "\n"
+    text += "EVIDENCE[KEYPAD].TOP24=" + max_subnet + ".0/24\n"
+    text += "EVIDENCE[KEYPAD].COUNT=" + str(count) + "\n"
+    text += "EVIDENCE[KEYPAD].SAMPLE=" + sample_entry + "\n"
+    text += "EVIDENCE[KEYPAD].MALFORMED_SKIPPED=" + str(invalid_count) + "\n"
+
+    print(text)
+    #return text
 
 read_file('MCYSD_PF/data/auth.log')
 #print(logs[23][2].split('[')[1].split(']')[0]) 
 #failed_login()
-keypad_gen()
+#keypad_gen()
+soc_transcript()
