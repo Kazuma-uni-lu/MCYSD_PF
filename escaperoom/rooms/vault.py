@@ -51,9 +51,9 @@ class VaultRoom(Room):
         state.inventory.add(self.token_name)
 
         return [
-            f"TOKEN[{self.token_name}]={token}"
-            f"EVIDENCE[{self.token_name}].MATCH={evid}"
-            f"EVIDENCE[{self.token_name}].CHECK={a}+{b}={c}"
+            f"TOKEN[{self.token_name}]={token}",
+            f"EVIDENCE[{self.token_name}].MATCH={evid}",
+            f"EVIDENCE[{self.token_name}].CHECK={a}+{b}={c}",
         ]
 
 
