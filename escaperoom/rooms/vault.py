@@ -2,7 +2,7 @@ from escaperoom.rooms.base import GameState,Room
 
 
 import re
-'''
+r'''
 https://docs.python.org/3/howto/regex.html  guide
 https://docs.python.org/3/library/re.html
 https://regex101.com use this to test regex 
@@ -26,12 +26,14 @@ class VaultRoom(Room):
         super().__init__(
             name = "vault",
             description = "You enter the Vault Corridor.\nA noisy dump scrolls past. Somewhere a SAFE{a-b-c} hides.\nItems here: vault_dump.txt",
-            item = "vault_dump.txt",
-            path = path,
-            token_name = "SAFE"
+            
         )
+        self.item = "vault_dump.txt"
+        self.path = path
+        self.token_name = "SAFE"
+
     def solve(self, state: GameState) -> tuple[str,list[int]]:
-        file_path = self.path + self.item
+        file_path = self.path + "/" + self.item
         found = None
         with open(file_path, 'r', encoding="utf-8") as file:
             for line in file:
@@ -44,7 +46,7 @@ class VaultRoom(Room):
                         break
         if found is None:
             raise ValueError("No candidates found")
-        evid, a, b, c = found
+        evid, (a, b, c) = found
         token = f"{a}-{b}-{c}"
         
         state.tokens[self.token_name] = token

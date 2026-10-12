@@ -1,5 +1,7 @@
 from datetime import datetime
-import ipaddress
+import ipaddress, os
+
+from escaperoom.rooms.base import GameState,Room
 
 logs = []
 valid_logs = []
@@ -95,13 +97,13 @@ def failed_login():
             max_freq_ip[ip] = 1
 
     octet = ""
-    count = 0
+    count = subnets[max_subnet] # Total failed logins for the chosen winning subnet
     chosen_ip = ""
 
     for ip, freq in max_freq_ip.items():
         if freq == max(max_freq_ip.values()):
             octet = ip.split('.')[3]
-            count = freq
+            
             chosen_ip = ip
             #print(f"IP with max failed logins in subnet {max_subnet}.0/24: {ip} ({freq} failed logins)")
 
@@ -111,6 +113,7 @@ def failed_login():
         if log[3] == "Failed" and log[8] == chosen_ip:
             sample_entry = " ".join(log)
 
+            break # when first match is found, stop the loop, otherise the last match will be taken
     return octet, count, max_subnet, sample_entry
 
 def keypad_gen(octet, count):
@@ -119,7 +122,7 @@ def keypad_gen(octet, count):
     #print(f"Generated keypad: {keypad}")
     return keypad
 
-
+'''
 def soc_transcript():
 
     invalid_count = check_valid_entry()
@@ -142,3 +145,40 @@ read_file('MCYSD_PF/data/auth.log')
 #failed_login()
 #keypad_gen()
 soc_transcript()
+'''
+
+class SocRoom(Room):
+
+    def __init__(self, path):
+        super().__init__(
+            name="soc",
+            description="You enter the SOC Triage Desk.\nA cluttered screen shows failed SSH login attempts.\nItems here: auth.log"
+        )
+
+        self.path = path
+        self.item = "auth.log"
+        self.token_name = "KEYPAD"
+
+    def solve(self, state: GameState):
+
+        logs.clear()
+        valid_logs.clear()
+
+        filepath = self.path + "/" + self.item
+
+        read_file(filepath)
+
+        invalid_count = check_valid_entry()
+        octet, count, max_subnet, sample_entry = failed_login()
+        keypad = keypad_gen(octet, count)
+
+        state.tokens[self.token_name] = keypad
+        state.inventory.add(self.token_name)
+
+        return [
+            f"TOKEN[KEYPAD]={keypad}",
+            f"EVIDENCE[KEYPAD].TOP24={max_subnet}.0/24",
+            f"EVIDENCE[KEYPAD].COUNT={count}",
+            f"EVIDENCE[KEYPAD].SAMPLE={sample_entry}",
+            f"EVIDENCE[KEYPAD].MALFORMED_SKIPPED={invalid_count}",
+        ]

@@ -1,5 +1,7 @@
 import base64
 import codecs
+import os
+from escaperoom.rooms.base import GameState, Room
 
 def decode(path) -> str:
     with open(path, "r", encoding="utf-8") as file:
@@ -46,6 +48,7 @@ def decode(path) -> str:
                     #decode base64
                     decrypted_payload = base64.b64decode(rot13_decoded_message).decode()
 
+                    '''
                     #remove period at the end and save final word
                     decrypted_payload = decrypted_payload.removesuffix(".")
 
@@ -53,6 +56,46 @@ def decode(path) -> str:
                     dns_token = decrypted_payload[decrypted_payload.rfind(" ")+1:]
                     print("Decrypted hint: " + dns_token)
                     return dns_token
+                    '''
+
+                    decoded_line = decrypted_payload
+
+                    decrypted_payload = decrypted_payload.removesuffix(".")
+
+                    dns_token = decrypted_payload[decrypted_payload.rfind(" ")+1:]
+                    print("Decrypted hint: " + dns_token)
+
+                    return dns_token, key, encoding, decoded_line           
                     
 
-print(decode("data/dns.cfg"))
+#print(decode("data/dns.cfg"))
+
+class DnsRoom(Room):
+
+    def __init__(self, path):
+        super().__init__(
+            name="dns",
+            description="You enter the DNS Closet.\nThe walls are covered with scribbled key=value pairs.\nItems here: dns.cfg"
+        )
+
+        self.path = path
+        self.item = "dns.cfg"
+        self.token_name = "DNS"
+
+    def solve(self, state: GameState):
+
+        # Call the existing decoding function
+        dns_token, key, encoding, decoded_line = decode(os.path.join(self.path, self.item))
+
+        # Save token in GameState
+        state.tokens[self.token_name] = dns_token
+        state.inventory.add(self.token_name)
+
+        # Return transcript lines
+        return [
+            f"TOKEN[{self.token_name}]={dns_token}",
+            f"EVIDENCE[{self.token_name}].KEY={key}",
+            f"EVIDENCE[{self.token_name}].ENCODING={encoding}",
+            f"EVIDENCE[{self.token_name}].DECODED_LINE={decoded_line}",
+        ]
+
