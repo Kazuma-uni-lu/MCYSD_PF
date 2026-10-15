@@ -4,21 +4,6 @@ import ipaddress
 logs = []
 valid_logs = []
 
-from escaperoom.rooms.base import GameState,Room
-#soc -> Keypad
-#soc, dns, vault, malware, final
-class SocRoom(Room):
-    def __init__(self, path):
-        super().__init__(
-            name = "soc",
-            description= "You enter the SOC Triage Desk.\nA cluttered screen shows failed SSH login attempts.\nItems here: auth.log",
-            item = "auth.log",
-            path = path,
-            token_name = "Keypad"
-        )
-    def solve(self, state:GameState):
-        raise NotImplementedError
-
 def read_file(filename):
     with open(filename, 'r', encoding='utf-8') as file:
         print(f"Reading file: {filename}")
@@ -123,7 +108,7 @@ def keypad_gen():
     keypad = octet + "" + str(count)
     print(f"Generated keypad code: {keypad}")
 
-read_file('MCYSD_PF/data/auth.log')
+read_file('data/auth.log')
 #print(logs[23][2].split('[')[1].split(']')[0]) 
 #failed_login()
 keypad_gen()
