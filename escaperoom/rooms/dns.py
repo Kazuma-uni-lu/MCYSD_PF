@@ -1,6 +1,22 @@
 import base64
 import codecs
 
+
+from escaperoom.rooms.base import GameState,Room
+#dns -> DNS
+#soc, dns, vault, malware, final
+
+class VaultRoom(Room):
+    def __init__(self, path):
+        super().__init__(
+            name = "dns",
+            description= "You enter the DNS Closet.\nThe walls are covered with scribbled key=value pairs.\nItems here: dns.cfg",
+            item = "dns.cfg",
+            path = path,
+            token_name = "DNS"
+        )
+    def solve(self, state:GameState):
+        raise NotImplementedError
 def decode(path) -> str:
     with open(path, "r", encoding="utf-8") as file:
         for line in file:

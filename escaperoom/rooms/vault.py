@@ -30,7 +30,7 @@ class VaultRoom(Room):
             path = path,
             token_name = "SAFE"
         )
-    def solve(self, state: GameState) -> tuple[str,list[int]]:
+    def solve(self, state: GameState) -> list[str]:
         file_path = self.path + "/" + self.item
         found = None
         with open(file_path, 'r', encoding="utf-8") as file:
