@@ -31,7 +31,7 @@ class VaultRoom(Room):
             token_name = "SAFE"
         )
     def solve(self, state: GameState) -> tuple[str,list[int]]:
-        file_path = self.path + self.item
+        file_path = self.path + "/" + self.item
         found = None
         with open(file_path, 'r', encoding="utf-8") as file:
             for line in file:
@@ -44,7 +44,7 @@ class VaultRoom(Room):
                         break
         if found is None:
             raise ValueError("No candidates found")
-        evid, a, b, c = found
+        evid, (a, b, c) = found
         token = f"{a}-{b}-{c}"
         
         state.tokens[self.token_name] = token
@@ -59,9 +59,15 @@ class VaultRoom(Room):
 
 
 
-
-
-
+#if __name__ == "__main__":
+#    state = GameState()
+#    room = VaultRoom("data")
+#
+#    for line in room.solve(state):
+#        print(line)
+#
+#    print(state.tokens)
+#    print(state.inventory)
 
 
 

@@ -14,9 +14,12 @@ class GameState:
 
 #soc, dns, vault, malware, final
 class Room:
-    def __init__(self, name: str, description: str):
+    def __init__(self, name: str, description: str, item: str, token_name: str, path: str):
         self.name = name
         self.description = description
+        self.item = item
+        self.token_name = token_name
+        self.path = path
 
     def solve(self, state: GameState):
         raise NotImplementedError
