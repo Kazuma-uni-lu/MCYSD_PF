@@ -16,7 +16,15 @@ class VaultRoom(Room):
             token_name = "DNS"
         )
     def solve(self, state:GameState):
-        raise NotImplementedError
+        dns_token, hintX, encoding, sentence = decode(self.path + "/" + self.item)
+        state.tokens["DNS"] = dns_token
+        state.inventory.add("DNS")
+        return [
+            f"TOKEN[{self.token_name}]={dns_token}",
+            f"EVIDENCE[{self.token_name}].KEY={hintX}",
+            f"EVIDENCE[{self.token_name}].ENCODING={encoding}",
+            f"EVIDENCE[{self.token_name}].DECODED_LINE={sentence}",
+        ]
 def decode(path) -> str:
     with open(path, "r", encoding="utf-8") as file:
         for line in file:
@@ -27,7 +35,7 @@ def decode(path) -> str:
             key, value = current_line.split("=", 1)
             key = key.strip()
             value = value.strip()
-            print(key + "=" + value)
+            #print(key + "=" + value)
             #check to see if the line contains a message to decode
             if current_line.find(":") != -1:
                 encoding, payload = value.split(":", 1)
@@ -35,13 +43,13 @@ def decode(path) -> str:
                     if encoding == "b64":
                         #decode base64 message to extract the hint
                         decrypted_payload = base64.b64decode(payload).decode()
-                        print("The correct hint is number " + decrypted_payload)
+                        #print("The correct hint is number " + decrypted_payload)
 
                         #transform payload back into utf-8
                         reversed_payload = base64.b64encode(decrypted_payload.encode("utf-8"))
                         reversed_payload_string = reversed_payload.decode("ascii")
-                        print("Encoded Base64 before decoding : " + payload)
-                        print("Reencoded Base64 message : " + reversed_payload_string )
+                        #print("Encoded Base64 before decoding : " + payload)
+                        #print("Reencoded Base64 message : " + reversed_payload_string )
 
     #traverse the file again, only this time pre-checking for the correct hint
     with open(path, "r", encoding="utf-8") as file:
@@ -52,7 +60,7 @@ def decode(path) -> str:
             key, value = current_line.split("=", 1)
             key = key.strip()
             value = value.strip()
-            print(key, value)
+            #print(key, value)
             if current_line.find(":") != -1:
                 encoding, payload = value.split(":", 1)
                 if encoding == "rot13+b64":
@@ -60,15 +68,24 @@ def decode(path) -> str:
                     rot13_decoded_message = codecs.decode(payload, "rot13")
 
                     #decode base64
-                    decrypted_payload = base64.b64decode(rot13_decoded_message).decode()
+                    sentence = base64.b64decode(rot13_decoded_message).decode()
 
                     #remove period at the end and save final word
-                    decrypted_payload = decrypted_payload.removesuffix(".")
+                    decrypted_payload = sentence.removesuffix(".")
 
                     #extracted dns token
                     dns_token = decrypted_payload[decrypted_payload.rfind(" ")+1:]
-                    print("Decrypted hint: " + dns_token)
-                    return dns_token
+                    #print("Decrypted hint: " + dns_token)
+                    return dns_token, key, encoding, sentence
                     
 
-print(decode("data/dns.cfg"))
+#print(decode("data/dns.cfg"))
+#if __name__ == "__main__":
+#    state = GameState()
+#    room = VaultRoom("data")
+#
+#    for line in room.solve(state):
+#        print(line)
+#
+#    print(state.tokens)
+#    print(state.inventory)
