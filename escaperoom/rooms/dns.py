@@ -50,6 +50,19 @@ def decode(path) -> str:
                         reversed_payload_string = reversed_payload.decode("ascii")
                         #print("Encoded Base64 before decoding : " + payload)
                         #print("Reencoded Base64 message : " + reversed_payload_string )
+                    elif encoding == "rot13+b64":
+                        #decode rot13 first
+                        rot13_decoded_message = codecs.decode(payload, "rot13")
+
+                        decrypted_payload = base64.b64decode(rot13_decoded_message).decode()
+                        reversed_payload = base64.b64encode(decrypted_payload.encode("utf-8"))
+                        reversed_payload_string = reversed_payload.decode("ascii")
+                    else:
+                        return [
+                            f"Encoding not valid.",
+                            f"Token could not be read!"
+                        ]
+
 
     #traverse the file again, only this time pre-checking for the correct hint
     with open(path, "r", encoding="utf-8") as file:
@@ -77,15 +90,29 @@ def decode(path) -> str:
                     dns_token = decrypted_payload[decrypted_payload.rfind(" ")+1:]
                     #print("Decrypted hint: " + dns_token)
                     return dns_token, key, encoding, sentence
+                elif encoding == "b64":
+                    sentence = base64.b64decode(rot13_decoded_message).decode()
+
+                    decrypted_payload = sentence.removesuffix(".")
+
+                    dns_token = decrypted_payload[decrypted_payload.rfind(" ")+1:]
+
+                    return dns_token, key, encoding, sentence
+                else:
+                        return [
+                            f"Encoding not valid.",
+                            f"Hint could not be extracted!"
+                        ]
+
                     
 
 #print(decode("data/dns.cfg"))
-#if __name__ == "__main__":
-#    state = GameState()
-#    room = VaultRoom("data")
-#
-#    for line in room.solve(state):
-#        print(line)
-#
-#    print(state.tokens)
-#    print(state.inventory)
+if __name__ == "__main__":
+    state = GameState()
+    room = VaultRoom("data")
+
+    for line in room.solve(state):
+        print(line)
+
+    print(state.tokens)
+    print(state.inventory)
