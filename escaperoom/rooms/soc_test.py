@@ -20,7 +20,7 @@ class SocRoom(Room):
         )
     def solve(self, state:GameState):
         self.logs = read_file(self.path + "/" + self.item)
-        keypad_gen(self.logs,self.valid_logs)
+        return keypad_gen(self.logs,self.valid_logs)
         
 
 def read_file(filename):
@@ -123,10 +123,11 @@ def failed_login(logs,valid_logs):
 
     return octet, count
 
-def keypad_gen(logs,valid_logs):
+def keypad_gen(logs,valid_logs) -> list[str]:
     octet, count = failed_login(logs,valid_logs)
     keypad = octet + "" + str(count)
     print(f"Generated keypad code: {keypad}")
+    return keypad
 
 #read_file('MCYSD_PF/data/auth.log')
 #print(logs[23][2].split('[')[1].split(']')[0]) 

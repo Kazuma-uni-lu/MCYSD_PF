@@ -1,6 +1,5 @@
-
 from escaperoom.rooms.base import GameState
-from escaperoom.rooms.soc import SocRoom
+from escaperoom.rooms.soc_test import SocRoom
 from escaperoom.rooms.dns import DnsRoom
 from escaperoom.rooms.vault import VaultRoom
 from escaperoom.rooms.malware import MalwareRoom

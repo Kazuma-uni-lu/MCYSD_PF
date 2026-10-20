@@ -6,7 +6,7 @@ from escaperoom.rooms.base import GameState,Room
 #dns -> DNS
 #soc, dns, vault, malware, final
 
-class VaultRoom(Room):
+class DnsRoom(Room):
     def __init__(self, path):
         super().__init__(
             name = "dns",
@@ -109,7 +109,7 @@ def decode(path) -> str:
 #print(decode("data/dns.cfg"))
 if __name__ == "__main__":
     state = GameState()
-    room = VaultRoom("data")
+    room = DnsRoom("data")
 
     for line in room.solve(state):
         print(line)
