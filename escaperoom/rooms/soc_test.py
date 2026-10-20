@@ -20,7 +20,14 @@ class SocRoom(Room):
         )
     def solve(self, state:GameState):
         self.logs = read_file(self.path + "/" + self.item)
-        return keypad_gen(self.logs,self.valid_logs)
+        keypad_code = keypad_gen(self.logs,self.valid_logs)
+        return [
+            f"TOKEN[KEYPAD]={keypad_code}",
+            f"EVIDENCE[KEYPAD].TOP24=<cidr>/24",
+            f"EVIDENCE[KEYPAD].COUNT=<int>",
+            f"EVIDENCE[KEYPAD].SAMPLE=<one full valid failed-login line from the winning /24>",
+            f"EVIDENCE[KEYPAD].MALFORMED_SKIPPED=<int>"
+        ]
         
 
 def read_file(filename):
