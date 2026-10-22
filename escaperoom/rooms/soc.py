@@ -22,6 +22,9 @@ class SocRoom(Room):
         self.logs = read_file(self.path + "/" + self.item)
         keypad_code, cidr, count, sample, invalid_count, octet = keypad_gen(self.logs, self.valid_logs) 
        
+        state.tokens[self.token_name] = keypad_code
+        state.inventory.add(self.token_name)
+       
         return [
             f"TOKEN[{self.token_name}]={keypad_code}",
             f"EVIDENCE[{self.token_name}].TOP24={cidr}.0/24",
