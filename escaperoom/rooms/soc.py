@@ -1,15 +1,44 @@
 from datetime import datetime
 import ipaddress
 
-logs = []
-valid_logs = []
+#logs = []
+#valid_logs = []
+
+from escaperoom.rooms.base import GameState,Room
+#soc -> Keypad
+#soc, dns, vault, malware, final
+class SocRoom(Room):
+    logs = []
+    valid_logs = []
+    def __init__(self, path):
+        super().__init__(
+            name = "soc",
+            description= "You enter the SOC Triage Desk.\nA cluttered screen shows failed SSH login attempts.\nItems here: auth.log",
+            item = "auth.log",
+            path = path,
+            token_name = "KEYPAD"
+        )
+    def solve(self, state:GameState):
+        self.logs = read_file(self.path + "/" + self.item)
+        keypad_code, cidr, count, sample, invalid_count, octet = keypad_gen(self.logs, self.valid_logs) 
+       
+        return [
+            f"TOKEN[{self.token_name}]={keypad_code}",
+            f"EVIDENCE[{self.token_name}].TOP24={cidr}.0/24",
+            f"EVIDENCE[{self.token_name}].COUNT={count}",
+            f"EVIDENCE[{self.token_name}].SAMPLE={sample}",
+            f"EVIDENCE[{self.token_name}].MALFORMED_SKIPPED={invalid_count}"
+        ]
+    
+        
 
 def read_file(filename):
+    logs = []
     with open(filename, 'r', encoding='utf-8') as file:
-        print(f"Reading file: {filename}")
+        #print(f"Reading file: {filename}")
         for line in file:
             logs.append(line.strip().split())
-            #print(line)
+    return logs
            
 def daytime_valid(date_time):
     try:
@@ -39,7 +68,7 @@ def ipaddress_check(ip):
         #print(f"Invalid IP address: {ip}")
         return False
 
-def check_valid_entry():
+def check_valid_entry(logs,valid_logs):
     invalid_count = 0
     for i in range(len(logs)):
         if (
@@ -51,11 +80,13 @@ def check_valid_entry():
             valid_logs.append(logs[i])
         else:
             invalid_count += 1
-    print(f"Total valid entries: {len(valid_logs)}")
-    print(f"Total invalid entries: {invalid_count}")
+    #print(f"Total valid entries: {len(valid_logs)}")
+    #print(f"Total invalid entries: {invalid_count}")
 
-def failed_login():
-    check_valid_entry()
+    return invalid_count
+
+def failed_login(logs,valid_logs):
+    invalid_count = check_valid_entry(logs,valid_logs)
     ips = []
     subnets = {}
     for log in valid_logs:
@@ -68,15 +99,15 @@ def failed_login():
             subnets[tmp] += 1
         else:
             subnets[tmp] = 1
-    print(f"Subnets with failed logins: {subnets}")
-    print(f"Max failed logins from a subnet: {max(subnets.values())}")
+    #print(f"Subnets with failed logins: {subnets}")
+    #print(f"Max failed logins from a subnet: {max(subnets.values())}")
 
     max_subnet=""
 
     for subnet, count in subnets.items():
         if count == max(subnets.values()):
             max_subnet = subnet
-            print(f"Subnet with the most failed logins: {subnet}.0/24 with {count} failed logins.")
+            #print(f"Subnet with the most failed logins: {subnet}.0/24 with {count} failed logins.")
 
     max_subnet_ips = []
 
@@ -99,16 +130,35 @@ def failed_login():
         if freq == max(max_freq_ip.values()):
             octet = ip.split('.')[3]
             count = freq
-            print(f"IP with the most failed logins in subnet {max_subnet}.0/24: {ip} with {freq} failed logins.")
+            #print(f"IP with the most failed logins in subnet {max_subnet}.0/24: {ip} with {freq} failed logins.")
 
-    return octet, count
+    max_ip = max_subnet +"."+octet
 
-def keypad_gen():
-    octet, count = failed_login()
-    keypad = octet + "" + str(count)
-    print(f"Generated keypad code: {keypad}")
+    subnet_count = subnets[max_subnet]
 
-read_file('data/auth.log')
+    sample = ""
+
+    for parts in valid_logs:
+        current_ip = parts[8]
+        if parts[3] == "Failed" and current_ip == max_ip:
+            sample = " ".join(parts)
+            break
+
+
+    return octet, count, max_subnet, subnet_count, sample, invalid_count
+
+def keypad_gen(logs,valid_logs) -> list[str]:
+    octet, count, max_subnet, subnet_count, sample, invalid_count = failed_login(logs,valid_logs)
+    keypad = octet + "" + str(subnet_count)
+    #print(f"Generated keypad code: {keypad}")
+    return keypad, max_subnet, subnet_count, sample, invalid_count, octet
+
+#read_file('MCYSD_PF/data/auth.log')
 #print(logs[23][2].split('[')[1].split(']')[0]) 
 #failed_login()
-keypad_gen()
+#keypad_gen()
+
+#if __name__ == "__main__":
+#    state = GameState()
+#    room = SocRoom("data")
+#    room.solve(state)
