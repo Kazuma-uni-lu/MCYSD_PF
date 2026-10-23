@@ -93,8 +93,13 @@ class GameEngine:
 
     def load(self, filename):
         
-        with open(filename, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+        except FileNotFoundError:
+            print("Filename " + filename + " does not exist!")
+            return
 
         self.state.current_room = data["current_room"]
         self.state.inventory = set(data["inventory"])
