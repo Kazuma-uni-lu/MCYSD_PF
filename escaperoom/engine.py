@@ -103,9 +103,11 @@ class GameEngine:
 
         except OSError as e:
             print("File error!")
+            return
 
         except UnicodeDecodeError:
             print("File is not readable!")
+            return
 
         self.state.current_room = data["current_room"]
         self.state.inventory = set(data["inventory"])
