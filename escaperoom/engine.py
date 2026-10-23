@@ -101,6 +101,12 @@ class GameEngine:
             print("Filename " + filename + " does not exist!")
             return
 
+        except OSError as e:
+            print("File error!")
+
+        except UnicodeDecodeError:
+            print("File is not readable!")
+
         self.state.current_room = data["current_room"]
         self.state.inventory = set(data["inventory"])
         self.state.tokens = data["tokens"]
