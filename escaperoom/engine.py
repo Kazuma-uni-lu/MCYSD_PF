@@ -102,7 +102,7 @@ class GameEngine:
             return
 
         except OSError as e:
-            print("File error!")
+            print(f"File error: {e}")
             return
 
         except UnicodeDecodeError:
