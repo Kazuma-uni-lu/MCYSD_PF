@@ -7,11 +7,12 @@ https://docs.python.org/3/howto/regex.html  guide
 https://docs.python.org/3/library/re.html
 https://regex101.com use this to test regex 
 
-\s => whitespace
-\d => digits
+backslash instead of slash (changed here for syntaxwarning)
+/s => whitespace
+/d => digits
 * zero or more
 + at least once
-\{\} escape sequence for {}
+/{/} escape sequence for {}
 (...) matches and indicates the start and end of a group; the contents of a group can be retrieved after a match has been performed
 https://docs.python.org/3/library/re.html#re.Match.group
 https://docs.python.org/3/library/re.html#search-vs-match
@@ -50,6 +51,8 @@ class VaultRoom(Room):
         state.tokens[self.token_name] = token
         state.inventory.add(self.token_name)
 
+        print(f"[Room Vault] Scanning dump...\nFound candidate: {evid}\nChecksum: {a}+{b}={c} (OK)")
+        
         return [
             f"TOKEN[{self.token_name}]={token}",
             f"EVIDENCE[{self.token_name}].MATCH={evid}",

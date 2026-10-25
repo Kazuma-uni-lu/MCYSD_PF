@@ -24,6 +24,8 @@ class SocRoom(Room):
        
         state.tokens[self.token_name] = keypad_code
         state.inventory.add(self.token_name)
+        
+        print(f"[Room SOC] Parsing logs...\n{count} failed attempts found in {cidr}.0/24\nToken formed: {keypad_code}")
        
         return [
             f"TOKEN[{self.token_name}]={keypad_code}",

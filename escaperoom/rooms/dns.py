@@ -19,6 +19,7 @@ class DnsRoom(Room):
         dns_token, hintX, encoding, sentence = decode(self.path + "/" + self.item)
         state.tokens["DNS"] = dns_token
         state.inventory.add("DNS")
+        print(f"[Room DNS] Decoding hints...\nDecoded line: {sentence}\nToken formed: {dns_token}\n")
         return [
             f"TOKEN[{self.token_name}]={dns_token}",
             f"EVIDENCE[{self.token_name}].KEY={hintX}",
