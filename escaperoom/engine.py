@@ -138,7 +138,8 @@ class GameEngine:
                 self.inventory()
 
             elif command == "quit":
-                print("[Game] Goodbye.")
+                self.transcript.write("[Game] Goodbye. Transcript written to run.txt")
+                print("[Game] Goodbye. Transcript written to run.txt")
                 break
 
             elif command == "help":
