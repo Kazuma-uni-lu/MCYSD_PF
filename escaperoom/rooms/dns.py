@@ -14,6 +14,7 @@ class DnsRoom(Room):
             item = "dns.cfg",
             path = path,
             token_name = "DNS"
+            hint = ""
         )
     def solve(self, state:GameState):
         dns_token, hintX, encoding, sentence = decode(self.path + "/" + self.item)

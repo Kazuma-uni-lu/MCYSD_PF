@@ -207,7 +207,20 @@ class GameEngine:
         self.transcript.write("MSG="+message)
         self.transcript.write("HMAC="+digest)
 
-    #TODO add hint() function
+    def hint(self):
+
+        if self.state.current_room not in self.rooms:
+            print("There are no hints available in this room.")
+            return
+
+        room = self.rooms[self.state.current_room]
+        hint = room.hint()
+
+        if hint:
+            print("Hint: " + hint)
+        else:
+            print("There are no hints in this room.")
+
 
 if __name__ == "__main__":
 
