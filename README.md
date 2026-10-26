@@ -24,8 +24,8 @@ move <room>
 inspect <item>
 use gate (in final gate)
 iventory
+hint
 save <savefilename>
 load <savefilename>
-hint
 quit
 ```

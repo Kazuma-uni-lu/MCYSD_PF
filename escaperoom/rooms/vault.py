@@ -29,7 +29,8 @@ class VaultRoom(Room):
             description = "You enter the Vault Corridor.\nA noisy dump scrolls past. Somewhere a SAFE{a-b-c} hides.\nItems here: vault_dump.txt",
             item = "vault_dump.txt",
             path = path,
-            token_name = "SAFE"
+            token_name = "SAFE",
+            hint = "The vault contains a hidden SAFE token. Find the correct combination by analyzing the dump."
         )
     def solve(self, state: GameState) -> list[str]:
         file_path = self.path + "/" + self.item

@@ -13,8 +13,8 @@ class DnsRoom(Room):
             description= "You enter the DNS Closet.\nThe walls are covered with scribbled key=value pairs.\nItems here: dns.cfg",
             item = "dns.cfg",
             path = path,
-            token_name = "DNS"
-            hint = ""
+            token_name = "DNS",
+            hint = "Decode and extract the correct hint from the dns.cfg file to form the DNS token."
         )
     def solve(self, state:GameState):
         dns_token, hintX, encoding, sentence = decode(self.path + "/" + self.item)

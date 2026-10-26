@@ -155,6 +155,9 @@ class GameEngine:
             elif command == "use gate":
                 self.use_gate()
 
+            elif command == "hint":
+                self.hint()
+
             else:
                 print("Unknown command.")
 
@@ -214,12 +217,12 @@ class GameEngine:
             return
 
         room = self.rooms[self.state.current_room]
-        hint = room.hint()
+        hint = room.hint
 
         if hint:
             print("Hint: " + hint)
         else:
-            print("There are no hints in this room.")
+            print("There are no hints available in this room.")
 
 
 if __name__ == "__main__":

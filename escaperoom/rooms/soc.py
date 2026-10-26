@@ -16,7 +16,8 @@ class SocRoom(Room):
             description= "You enter the SOC Triage Desk.\nA cluttered screen shows failed SSH login attempts.\nItems here: auth.log",
             item = "auth.log",
             path = path,
-            token_name = "KEYPAD"
+            token_name = "KEYPAD",
+            hint = "The SSH log contains successful and failed authentication records. Identify the /24 subnet responsible for the largest number of failed authentication attempts."
         )
     def solve(self, state:GameState):
         self.logs = read_file(self.path + "/" + self.item)
